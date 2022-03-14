@@ -6,7 +6,7 @@ class Square extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      value: null,
+      value: this.props.key,
     }
   }
   render() {
@@ -31,13 +31,13 @@ class Board extends React.Component {
 
   render(){
     let sqrRen = [];
-    for(let i = 0; i < 30; i=i+5){
-      sqrRen.push(<div className = "board-row">
-        {this.renderSquare(0+i)}
-        {this.renderSquare(1+i)}
-        {this.renderSquare(2+i)}
-        {this.renderSquare(3+i)} 
-        {this.renderSquare(4+i)}  
+    for(let i = 0; i < 6; i=i+1){
+      sqrRen.push(<div key={i} className = "board-row">
+        {this.renderSquare(0+i*5)}
+        {this.renderSquare(1+i*5)}
+        {this.renderSquare(2+i*5)}
+        {this.renderSquare(3+i*5)} 
+        {this.renderSquare(4+i*5)}  
       </div>);
     }
     return (
@@ -56,18 +56,50 @@ class Game extends React.Component {
     super(props);
     this.state = {
       spot: 0,
-      key: null,
+      key: 'A',
     }
+    this.word=""
     this.typedLetter = this.typedLetter.bind(this);
     this.backSpace = this.backSpace.bind(this);
+    this.printCurrentStates()
   }
 
-  typedLetter(){
-    /* action when a letter is pressed */
+  printCurrentStates(){
+    console.log("Current Spot: "+this.state.spot);
+    console.log("Current Word: "+this.word);
   }
 
-  backSpace(){
-    /* action when backspace is pressed */
+  handleKeyDown(e) {
+    const keyCode = e.keyCode;
+
+    if (keyCode > 64 && keyCode < 91){
+      let letter = String.fromCharCode(keyCode);
+      this.typedLetter(letter);
+    }
+
+    if (keyCode === 8){
+      this.backSpace(e);
+    }
+  }
+
+  typedLetter = function(letter){
+    console.log(letter)
+    this.word += letter;
+  }
+
+  backSpace(e){
+    if (this.state.spot > 0){
+      this.setState({spot: this.state.spot-1});
+      this.word = this.word.substring(0, (this.word.length)-1);
+    }
+  }
+
+  componentDidMount(){
+    document.addEventListener("keydown", this.handleKeyDown);
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.handleKeyDown);
   }
 
   render() {
